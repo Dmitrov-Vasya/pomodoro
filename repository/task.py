@@ -1,0 +1,64 @@
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError, NoResultFound
+from sqlalchemy import select, delete
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.sync import update
+
+
+from database import Tasks
+from schema.tasks import TaskSchema
+
+
+class TaskRepository:
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
+
+    def get_tasks(self):
+        with self.db_session() as session:
+            task = session.execute(select(Tasks)).scalars().all()
+        return task
+
+    def get_task(self, task_id: int) -> Tasks | None:
+        with self.db_session() as session:
+            task = session.execute(select(Tasks).where(Tasks.id == task_id)).scalar_one_or_none()
+        return task
+
+    def create_task(self, task: TaskSchema) -> int:
+        task_model = Tasks(name=task.name, pomodoro_count=task.pomodoro_count, category_id=task.category_id)
+        try:
+            with self.db_session() as session:
+                session.add(task_model)
+                session.commit()
+                return task_model.id
+        except IntegrityError as e:
+            raise HTTPException(status_code=400, detail=f"Integrity error: {e}")
+        except SQLAlchemyError as e:
+            raise HTTPException(status_code=500, detail=f"Database error: {e}")
+        except Exception as e:
+            print(f"Unexpected error in create_task: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    def update_task_name(self, task_id: int, name: str) -> TaskSchema | None:
+        with self.db_session() as session:
+            try:
+                session.query(Tasks).filter(Tasks.id == task_id).update({"name": name})
+                session.commit()
+                updated_task = session.query(Tasks).get(task_id)
+                if updated_task is None:
+                    raise NoResultFound(f"Task not found")
+                return TaskSchema.from_orm(updated_task)
+            except NoResultFound:
+                raise
+            except SQLAlchemyError as e:
+                session.rollback()
+                raise
+
+    def delete_task(self, task_id: int) -> Tasks | None:
+        with self.db_session() as session:
+            session.execute(delete(Tasks).where(Tasks.id == task_id))
+            session.commit()
+
+
+
