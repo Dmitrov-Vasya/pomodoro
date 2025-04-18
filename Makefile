@@ -7,7 +7,7 @@ install:
 	poetry add $(LIBRARY)
 
 migrate-create:
-	poetry alembic revision --autogenerate -m $(MIGRATION)
+	alembic revision --autogenerate -m $(MIGRATION)
 
 migrate-apply:
 	alembic upgrade head
