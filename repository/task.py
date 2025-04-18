@@ -2,10 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError, NoResultFound
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.sync import update
 
-
-from database import Tasks
+from models import Tasks, Categories
 from schema.tasks import TaskSchema
 
 
@@ -59,6 +57,12 @@ class TaskRepository:
         with self.db_session() as session:
             session.execute(delete(Tasks).where(Tasks.id == task_id))
             session.commit()
+
+    def get_task_by_category_name(self, category_name: str) -> list[Tasks]:
+        query = select(Tasks).join(Categories, Tasks.category_id == Categories.id).where(Tasks.category_id == category_name)
+        with self.db_session() as session:
+            task: list[Tasks] = session.execute(query).scalars().all()
+            return task
 
 
 
