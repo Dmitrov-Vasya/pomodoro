@@ -6,6 +6,7 @@ class TaskSchema(BaseModel):
     name: str | None = None
     pomodoro_count: int | None = None
     category_id: int
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -17,3 +18,9 @@ class TaskSchema(BaseModel):
         if self.name is None and self.pomodoro_count is None:
             raise ValueError("name or pomodoro_count must be provided")
         return self
+
+
+class TaskCreateSchema(BaseModel):
+    name: str | None = None
+    pomodoro_count: int | None = None
+    category_id: int

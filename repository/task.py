@@ -4,6 +4,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
 from models import Tasks, Categories
+from schema import TaskCreateSchema
 from schema.tasks import TaskSchema
 
 
@@ -21,8 +22,21 @@ class TaskRepository:
             task = session.execute(select(Tasks).where(Tasks.id == task_id)).scalar_one_or_none()
         return task
 
-    def create_task(self, task: TaskSchema) -> int:
-        task_model = Tasks(name=task.name, pomodoro_count=task.pomodoro_count, category_id=task.category_id)
+
+    def get_user_task(self, user_id: int, task_id: int) -> Tasks | None:
+        query = select(Tasks).where(Tasks.id == task_id and Tasks.user_id ==user_id)
+        with self.db_session() as session:
+            task = session.execute(query).scalar_one_or_none()
+        return task
+
+
+    def create_task(self, task: TaskCreateSchema, user_id: int) -> int:
+        task_model = Tasks(
+            name=task.name,
+            pomodoro_count=task.pomodoro_count,
+            category_id=task.category_id,
+            user_id=user_id
+        )
         try:
             with self.db_session() as session:
                 session.add(task_model)
@@ -53,9 +67,9 @@ class TaskRepository:
                 session.rollback()
                 raise
 
-    def delete_task(self, task_id: int) -> Tasks | None:
+    def delete_task(self, task_id: int, user_id: int) -> Tasks | None:
         with self.db_session() as session:
-            session.execute(delete(Tasks).where(Tasks.id == task_id))
+            session.execute(delete(Tasks).where(Tasks.id == task_id and Tasks.user_id == user_id))
             session.commit()
 
     def get_task_by_category_name(self, category_name: str) -> list[Tasks]:
