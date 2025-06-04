@@ -1,6 +1,8 @@
+import httpx
 from fastapi import Depends, security, HTTPException
 from fastapi.params import Security
 
+from client import YandexClient
 from database import get_db_session
 from exception import TokenExpired, TokenNotCorrect
 from repository import TaskRepository, TaskCache, UserRepository
@@ -34,8 +36,23 @@ def get_user_repository() -> UserRepository:
     return UserRepository(db_session=db_session)
 
 
-def get_auth_service(user_repository: UserRepository = Depends(get_user_repository)) -> AuthService:
-    return AuthService(user_repository=user_repository, settings=Settings())
+async def get_async_client() -> httpx.AsyncClient:
+    return httpx.AsyncClient()
+
+
+async def get_yandex_client(async_client: httpx.AsyncClient = Depends(get_async_client)) -> YandexClient:
+    return YandexClient(settings=Settings(), async_client=async_client)
+
+
+def get_auth_service(
+        user_repository: UserRepository = Depends(get_user_repository),
+        yandex_client: YandexClient = Depends(get_yandex_client),
+) -> AuthService:
+    return AuthService(
+        user_repository=user_repository,
+        settings=Settings(),
+        yandex_client=yandex_client
+    )
 
 def get_user_service(
     user_repository: UserRepository = Depends(get_user_repository),
