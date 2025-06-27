@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "pomodoro-poetry"
+name = "Pomodoro"
 version = "0.1.0"
 description = ""
-authors = ["Said Magomedow <saidmagom@mail.ru>"]
+authors = [
+    "v_dmitrov <v.dmitrov@smartmerch.it>"
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.109.2"
+python = "^3.11.4"
 pydantic = "^2.6.1"
 pydantic-settings = "^2.1.0"
 sqlalchemy = "^2.0.27"
@@ -19,8 +20,14 @@ httpx = "^0.27.0"
 asyncpg = "^0.29.0"
 greenlet = "^3.0.3"
 gunicorn = "^21.2.0"
-
+pytest = "^8.4.1"
+pytest-asyncio = "^1.0.0"
+pytest-twisted = "^1.14.3"
+twisted = "^25.5.0"
+fastapi = "^0.115.13" 
+pytest-factoryboy = "^2.7.0"
+pytest-trio = "^0.8.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
