@@ -7,6 +7,8 @@ from app.users.auth.schema import GoogleUserData, YandexUserData
 
 from faker import Factory as FakerFactory
 
+from tests.fixtures.users.user_model import EXISTS_GOOGLE_USER_EMAIL
+
 faker = FakerFactory.create()
 
 
@@ -50,7 +52,7 @@ def google_client():
 def google_user_info_data()-> GoogleUserData:
     return GoogleUserData(
         id=faker.random_int(),
-        email=faker.email(),
+        email=EXISTS_GOOGLE_USER_EMAIL,
         name=faker.name(),
         verified_email=True,
         access_token=faker.sha256()
