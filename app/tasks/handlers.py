@@ -1,6 +1,7 @@
+import time
 from typing import Annotated
 
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 
 from app.dependecy import get_task_service, get_request_user_id
 from app.exception import TaskNotFound
@@ -10,21 +11,22 @@ from app.tasks.service import TaskService
 router = APIRouter(prefix="/task", tags=["task"])
 
 
-@router.get(
-    "/all",
-    response_model=list[TaskSchema]
-)
+def get_tasks_log(tasks_count: int):
+    time.sleep(3.0)
+    print(f"Get {tasks_count} tasks")
+
+
+@router.get("/all",response_model=list[TaskSchema])
 async def get_tasks(
-    task_service: Annotated[TaskService, Depends(get_task_service)]
+    task_service: Annotated[TaskService, Depends(get_task_service)],
+    background_tasks: BackgroundTasks,
 ):
     tasks = await task_service.get_tasks()
+    background_tasks.add_task(get_tasks_log, tasks_count=len(tasks))
     return tasks
 
 
-@router.post(
-    "/",
-    response_model=TaskSchema
-)
+@router.post("/",response_model=TaskSchema)
 async def create_task(
     body: TaskCreateSchema,
     task_service: Annotated[TaskService, Depends(get_task_service)],
@@ -34,10 +36,7 @@ async def create_task(
     return task
 
 
-@router.patch(
-    "/{task_id}",
-    response_model=TaskSchema
-)
+@router.patch("/{task_id}",response_model=TaskSchema)
 async def patch_task(
     task_id: int,
     name: str,
