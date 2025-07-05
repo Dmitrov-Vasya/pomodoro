@@ -27,6 +27,8 @@ twisted = "^25.5.0"
 fastapi = "^0.115.13" 
 pytest-factoryboy = "^2.7.0"
 pytest-trio = "^0.8.0"
+celery = "^5.5.3"
+aio-pika = "^9.5.5"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

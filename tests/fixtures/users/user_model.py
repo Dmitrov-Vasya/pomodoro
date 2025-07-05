@@ -8,7 +8,7 @@ faker = Faker()
 
 
 EXISTS_GOOGLE_USER_ID = 20
-EXISTS_GOOGLE_USER_EMAIL = "google@gmail.com"
+EXISTS_GOOGLE_USER_EMAIL = "vd-boy400@yandex.ru"
 
 
 class UserProfileFactory(factory.Factory):

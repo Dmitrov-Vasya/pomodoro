@@ -52,7 +52,7 @@ def google_client():
 def google_user_info_data()-> GoogleUserData:
     return GoogleUserData(
         id=faker.random_int(),
-        email=EXISTS_GOOGLE_USER_EMAIL,
+        email='vd-boy400@yandex.ru',
         name=faker.name(),
         verified_email=True,
         access_token=faker.sha256()
@@ -62,7 +62,7 @@ def google_user_info_data()-> GoogleUserData:
 def yandex_user_info_data() -> dict:
     return YandexUserData(
         id=faker.random_int(),
-        default_email=faker.email(),
+        default_email='vd-boy400@yandex.ru',
         login=faker.name(),
         access_token=faker.sha256(),
         real_name=faker.name()

@@ -12,10 +12,7 @@ from app.users.auth.service import AuthService
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post(
-    "/login",
-    response_model=UserLoginSchema
-)
+@router.post("/login", response_model=UserLoginSchema)
 async def login(
     body: UserCreateSchema,
     auth_service: Annotated[AuthService, Depends(get_auth_service)]
@@ -37,10 +34,7 @@ async def login(
         )
 
 
-@router.get(
-    "/login/google",
-    response_class=RedirectResponse
-)
+@router.get("/login/google", response_class=RedirectResponse)
 async def google_login(
     auth_service: Annotated[AuthService, Depends(get_auth_service)]
 ):
@@ -51,17 +45,11 @@ async def google_login(
 @router.get(
     "/google",
 )
-async def google_auth(
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    code: str
-):
+async def google_auth(auth_service: Annotated[AuthService, Depends(get_auth_service)], code: str):
     return await auth_service.google_auth(code=code)
 
 
-@router.get(
-    "/login/yandex",
-    response_class=RedirectResponse
-)
+@router.get("/login/yandex", response_class=RedirectResponse)
 async def yandex_login(
     auth_service: Annotated[AuthService, Depends(get_auth_service)]
 ):
@@ -69,9 +57,7 @@ async def yandex_login(
     return RedirectResponse(redirect_url)
 
 
-@router.get(
-    "/yandex",
-)
+@router.get("/yandex")
 async def yandex_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
     code: str
